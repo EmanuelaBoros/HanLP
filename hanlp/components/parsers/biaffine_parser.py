@@ -234,7 +234,7 @@ class BiaffineDependencyParser(KerasComponent):
     def decode(self, arc_scores, rel_scores, mask):
         if self.config.tree:
             # arc_preds = eisner(arc_scores, mask)
-            pass
+            raise NotImplemented('Give me some time...')
         else:
             arc_preds = tf.argmax(arc_scores, -1)
 
@@ -277,11 +277,6 @@ class BiaffineDependencyParser(KerasComponent):
         loss = float(c.progbar._values['loss'][0] / c.progbar._values['loss'][1])
         return loss, metric.to_dict(), False
 
-    def parse(self, sents: Union[List[Tuple[str, str]], List[List[Tuple[str, str]]]]) -> Union[
-        CoNLLSentence, List[CoNLLSentence]]:
-
-        pass
-
     def predict_batch(self, batch, inputs=None):
         ((words, feats), (arcs, rels)) = batch
         mask = tf.not_equal(words, self.config.pad_index) & tf.not_equal(words, self.config.bos_index)
@@ -290,9 +285,6 @@ class BiaffineDependencyParser(KerasComponent):
         for sent in self.transform.XY_to_inputs_outputs((words, feats, mask), (arc_preds, rel_preds), gold=False,
                                                         inputs=inputs):
             yield sent
-
-    def compile_model(self, optimizer, loss, metrics):
-        super().compile_model(optimizer, loss, metrics)
 
 
 class BiaffineSemanticDependencyParser(BiaffineDependencyParser):
